@@ -22,6 +22,7 @@ networks:
       - 10.0.0.1/32
       - 10.0.1.10 - 10.0.1.20
   - sensor_prefix: sn0
+  - api_port: 80
   - api_location: /
   - cron: * * * * * *
 ```
@@ -69,5 +70,6 @@ It expects a JSON body containing:
 - *network_name:* the name of the network
 - *ip_addresses:* IP address with mask or range of IP addresses
 - *sensor_prefix:* prefix for the sensor, it's recommended to use the sensor prefix for deduplication in the backend.
+- *api_port:* port the API is listening to.
 - *api_location:* location of the sensor API
 - *cron:* interval between polling for this network
