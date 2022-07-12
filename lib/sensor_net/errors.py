@@ -1,6 +1,12 @@
 """Errors package"""
 
 
+class ConfigError(Exception):
+    """Configuration generic exception"""
+
+    pass
+
+
 class BackendError(Exception):
     """Backend Error"""
 
@@ -19,6 +25,12 @@ class BackendError(Exception):
 
 class BackendWriteError(BackendError):
     """Backend Write Error"""
+
+    pass
+
+
+class BackendConfigError(BackendError, ConfigError):
+    """Specific configuration error for Backend"""
 
     pass
 
