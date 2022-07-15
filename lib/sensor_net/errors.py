@@ -7,8 +7,32 @@ class ConfigError(Exception):
     pass
 
 
+class MissingDriverError(ConfigError):
+    """
+    Exception raised when a driver cannot be found.
+
+    :attribute backend_name: Name of the driver.
+    :attribute message: Complete error message.
+    """
+
+    def __init__(self, driver_name: str, *args):
+        """
+        Exception raised when a driver cannot be found.
+
+        :param driver_name: name of the driver.
+        """
+        self.driver_name = driver_name
+        self.message = "Driver: %s cannot be found." % driver_name
+        super().__init__(self.message, *args)
+
+
 class BackendError(Exception):
-    """Backend Error"""
+    """
+    Backend Error
+
+    :attribute backend_name: Name of the backend.
+    :attribute message: Error message.
+    """
 
     def __init__(self, backend_name: str, message: str, *args):
         """

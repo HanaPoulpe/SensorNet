@@ -1,7 +1,7 @@
 """Base configuration manager."""
 import dataclasses
 import re
-from typing import Iterable
+from typing import Callable, Iterable
 
 from .drivers import BackendDriver
 
@@ -22,7 +22,7 @@ class _EndpointWalker:
 
         :param ip_list: List of IP  to walk
         """
-        self._list = []
+        self._list: list[Callable[[], Iterable[str]]] = []
         (self._append_group(ip) for ip in ip_list)
 
     def _append_group(self, ip: str):
@@ -60,6 +60,7 @@ class NetworkConfig:
     api_location: str = dataclasses.field(default="/")
 
     def __post_init__(self):
+        """Completes dataclasses initialization."""
         self.api_endpoints = _EndpointWalker(self.ip_addresses)
 
 
@@ -74,6 +75,7 @@ class ApplicationConfig:
     network_setup: list[NetworkConfig] = dataclasses.field(init=False)
 
     def __post_init__(self):
+        """Complete dataclass initialization."""
         raise NotImplementedError("Application configuration is not implemented.")
 
 

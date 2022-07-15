@@ -1,13 +1,17 @@
 """Backend driver Stub package"""
+from typing import Callable
+
 import sensor_net
 import sensor_net.errors
 
-
-def _get_driver(name: str, config: dict):
-    raise RuntimeError("StubBackend is not available.")
+_get_driver: Callable[[str, dict], "StubBackendDriver"] | None = None
 
 
-get_driver = _get_driver
+def get_driver(name: str, config: dict):
+    """Returns a StubDriver."""
+    if not _get_driver:
+        raise RuntimeError("StubBackend is not available.")
+    return _get_driver(name, config)
 
 
 class StubBackendDriver:
@@ -15,6 +19,8 @@ class StubBackendDriver:
 
     def __init__(self, name: str, parent: 'StubBackend'):
         """
+        Initialize the StubBackendDriver
+
         :param parent: StubBackend attached to this backend driver.
         """
         self.__parent = parent
@@ -26,10 +32,11 @@ class StubBackendDriver:
             network_name: str,
             network_prefix: str,
             sensor_address: str,
-            data: list[sensor_net.SensorData]
+            data: list[sensor_net.SensorData],
     ):
         """
         Register writes to the stub backend
+
         :param network_name: Network name, not used
         :param network_prefix: Network prefix, not used
         :param sensor_address: Sensor address, not used
@@ -37,7 +44,7 @@ class StubBackendDriver:
         """
         self.__parent.register_write(
             self.__name,
-            data
+            data,
         )
 
 
@@ -49,8 +56,8 @@ class StubBackend:
     >>> stub = StubBackend()
     >>> stub.start()
     >>> backend_driver = get_driver("stub", {})
-    >>> backend_driver.write("stub_net", "stb", "0.0.0.0",
-    >>>     [sensor_net.SensorData("heartbeat", 0, datetime.datetime.utcnow())])
+    >>> data = sensor_net.SensorData("heartbeat", 0, datetime.datetime.utcnow())
+    >>> backend_driver.write("stub_net", "stb", "0.0.0.0", [data])
     >>> assert len(stub.writes) == 1
     >>> stub.stop()
 
@@ -74,18 +81,21 @@ class StubBackend:
 
     def start(self):
         """Begin the stub of backend driver."""
-        global get_driver
-        get_driver = self
+        global _get_driver
+        _get_driver = self
 
     def __enter__(self):
+        """Starts mocking."""
         self.start()
 
     @staticmethod
     def stop():
-        global get_driver
-        get_driver = _get_driver
+        """Stops mocking."""
+        global _get_driver
+        _get_drive = None  # noqa: F841
 
     def __exit__(self, exc_type, exc_val, exc):
+        """Stops mocking."""
         self.stop()
 
     def __call__(self, name: str, configuration: dict) -> StubBackendDriver:
@@ -113,7 +123,7 @@ class StubBackend:
         if self.write_error:
             raise sensor_net.errors.BackendWriteError(name, "Stub sets to raise an exception.")
 
-        [self._writes.append((name, d,)) for d in write]
+        self._writes.extend(((name, d) for d in write))
 
     @property
     def drivers(self) -> dict[str, StubBackendDriver]:

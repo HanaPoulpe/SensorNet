@@ -4,9 +4,9 @@ import decimal
 import unittest
 
 import sensor_net
-import sensor_net.errors
 import sensor_net.backend_driver.sqlalchemy
 import sensor_net.backend_driver.sqlalchemy.schema
+import sensor_net.errors
 
 
 class TestSQLAlchemyBackendWorking(unittest.TestCase):

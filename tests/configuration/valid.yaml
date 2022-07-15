@@ -1,0 +1,25 @@
+daemon_name: test_valid_config
+backend:
+  driver: stubber
+networks:
+  - name: test_net0
+    ip_address:
+      - 0.0.0.0
+    sensor_prefix: tst0
+    api_port: 80
+    api_location: /
+    cron: * * * * * *
+  - name: test_net1
+    ip_address:
+      - 10.0.0.0/24
+    sensor_prefix: tst1
+    api_port: 80
+    api_location: /
+    cron: * * * * * *
+  - name: test_net2
+    ip_address:
+      - 10.0.1.1 - 10.0.1.10
+    sensor_prefix: tst2
+    api_port: 80
+    api_location: /
+    cron: * * * * * *
