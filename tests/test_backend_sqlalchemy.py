@@ -1,12 +1,13 @@
 """Test SQLAlchemy backend."""
 import datetime
 import decimal
+import logging
 import unittest
 
 import sensor_net
-import sensor_net.errors
 import sensor_net.backend_driver.sqlalchemy
 import sensor_net.backend_driver.sqlalchemy.schema
+import sensor_net.errors
 
 
 class TestSQLAlchemyBackendWorking(unittest.TestCase):
@@ -20,6 +21,8 @@ class TestSQLAlchemyBackendWorking(unittest.TestCase):
         -> Create SQLLite backend configuration
         -> Retrieve SQLAlchemy backend connected to SQLLite
         """
+        logging.basicConfig(level=logging.DEBUG)
+
         self.driver = sensor_net.backend_driver.sqlalchemy.get_driver(
             "test_daemon",
             {"url": "sqlite:///:memory:"},

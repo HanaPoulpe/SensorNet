@@ -1,7 +1,7 @@
 # SensorNet
 > Lightweight sensor status pulling daemon.
 
-![PythonSupport]{https://img.shields.io/static/v1?label=Python&message=3.10&color=blue&style=flat&logo=python}
+![PythonSupport](https://img.shields.io/static/v1?label=Python&message=3.10&color=blue&style=flat&logo=python)
 
 ## Installation:
 
@@ -14,17 +14,17 @@ Create a configuration file in ```/etc/sensornet/sensor.yaml```
 ```yaml
 daemon_name: SensorNetDaemon
 backend:
-  - driver: sqlalchemy
-  - url: "engine://username:password@host:port/dbname"
+  driver: sqlalchemy
+  url: "engine://username:password@host:port/dbname"
 networks:
   - name: network0
-  - ip_addresses:
+    ip_addresses:
       - 10.0.0.1/32
       - 10.0.1.10 - 10.0.1.20
-  - sensor_prefix: sn0
-  - api_port: 80
-  - api_location: /
-  - cron: * * * * * *
+    sensor_prefix: sn0
+    api_port: 80
+    api_location: "/"
+    cron: "* * * * * *"
 ```
 
 ### daemon_name
@@ -48,6 +48,8 @@ def get_driver(name: str, configuration: dict) -> BackendDriver:
     raise NotImplementedError("get_backend is not implemented.")
 
 ```
+
+*Note: get_driver **MUST** have parameters types annotations.*
 
 ### networks:
 Defines the networks to pull.

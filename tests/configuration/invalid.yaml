@@ -1,0 +1,6 @@
+daemon_name: test_invalid_config
+backend:
+  driver: stubber
+networks:
+  - name: test_net0
+    cron: "* * * * * *"
