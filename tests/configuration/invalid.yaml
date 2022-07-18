@@ -3,4 +3,4 @@ backend:
   driver: stubber
 networks:
   - name: test_net0
-    cron: * * * * * *
+    cron: "* * * * * *"

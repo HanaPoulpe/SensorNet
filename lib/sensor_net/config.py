@@ -1,9 +1,15 @@
 """Base configuration manager."""
 import dataclasses
+import functools
 import re
-from typing import Callable, Iterable
+from typing import Generator, Iterable, Iterator
 
+import yaml
+
+from ._ip_iterator import IPRangeIterator, SubnetIterator
+from ._plugin_loader import load_backend_driver
 from .drivers import BackendDriver
+from .errors import ConfigError
 
 
 class _EndpointWalker:
@@ -22,29 +28,32 @@ class _EndpointWalker:
 
         :param ip_list: List of IP  to walk
         """
-        self._list: list[Callable[[], Iterable[str]]] = []
-        (self._append_group(ip) for ip in ip_list)
+        self._list: list[Iterable[str]] = []
+        [self._append_group(ip) for ip in ip_list]
 
     def _append_group(self, ip: str):
-        single_ip = r"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"
-        ip_mask = r"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$"
-        ip_list = ("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} - "
-                   "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")
-        if re.match(single_ip, ip):
-            self._list.append(lambda: (ip, ))
-            return
+        generator = [
+            (r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", lambda x: (x, )),  # Encapsulate ip in a tuple
+            (r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$", SubnetIterator),
+            ("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} - "
+             "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", IPRangeIterator),
+        ]
 
-        if re.match(ip_mask, ip):
-            raise NotImplementedError("IP with mask is not implemented.")
+        for p, i in generator:
+            if re.match(p, ip):
+                self._list.append(i(ip))  # type: ignore
+                return
+        else:
+            raise ConfigError("Invalid IP definition: %s" % ip)
 
-        if re.match(ip_list, ip):
-            raise NotImplementedError("IP list is not implemented.")
+    def __iter__(self) -> Iterator[str]:
+        """Setup IP list iterator"""
+        return self._walker()
 
-    def __iter__(self):
-        raise NotImplementedError("IP iteration is not implemented.")
-
-    def __next__(self) -> str:
-        raise NotImplementedError("IP iteration is not implemented.")
+    def _walker(self) -> Generator[str, None, None]:
+        """Generator that iterates over IP addresses."""
+        for ip_group in self._list:
+            yield from ip_group
 
 
 @dataclasses.dataclass
@@ -75,15 +84,45 @@ class ApplicationConfig:
     network_setup: list[NetworkConfig] = dataclasses.field(init=False)
 
     def __post_init__(self):
-        """Complete dataclass initialization."""
-        raise NotImplementedError("Application configuration is not implemented.")
+        """
+        Complete dataclass initialization.
+
+        -> Prepare defines network_setup
+        -> Loads backend driver module
+        -> Retrieve BackendDriver
+        """
+        self.network_setup = [NetworkConfig(**network) for network in self.networks]
+
+        backend_mod = load_backend_driver(self.backend["driver"])
+        self.driver = backend_mod.get_driver(self.daemon_name, self.backend)
 
 
+@functools.lru_cache(maxsize=1)
 def get_configuration(filename: str | None) -> ApplicationConfig:
     """
     Retrieve configuration from file.
 
+    - Read YAML file.
+    - Creates and a new ApplicationConfig object
+
+    Caches the configuration object.
+
     :param filename: [Optional] Configuration YAML file
     :return: Application configuration
     """
-    raise NotImplementedError("Configuration is not implemented.")
+    filename = filename or "/etc/sensornet/sensor.yaml"
+
+    try:
+        fp = open(filename, 'r')
+    except OSError as err:
+        raise ConfigError("Failed to open configuration file %s: %s" % (filename, err), err)
+
+    try:
+        cfg = yaml.safe_load(fp)
+        return ApplicationConfig(**cfg)
+    except yaml.YAMLError as err:
+        raise ConfigError("Failed to parse configuration file %s: %s" % (filename, err), err)
+    except (KeyError, ValueError, TypeError) as err:
+        raise ConfigError("Invalid configuration parameter: %s" % err, err)
+    finally:
+        fp.close()

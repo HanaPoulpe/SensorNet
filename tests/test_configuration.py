@@ -1,4 +1,5 @@
 """Test all configuration details."""
+import logging
 import os
 import unittest
 
@@ -14,7 +15,10 @@ class TestConfiguration(unittest.TestCase):
         """
         Defines configuration files base location
         Prepare StubBackendDriver
+        Set logger level to DEBUG
         """
+        logging.basicConfig(level=logging.DEBUG)
+
         self.config_path = os.path.join(os.path.dirname(__file__), "configuration")
         self.backend_driver = sensor_net.backend_driver.stubber.StubBackend()
         self.backend_driver.start()
@@ -80,8 +84,8 @@ class TestConfiguration(unittest.TestCase):
                 "api_port": 80,
                 "api_location": "/",
                 "cron": "* * * * * *",
-                "first_ip": "0.0.0.0",
-                "last_ip": "0.0.0.0",
+                "first_ip": "127.0.0.1",
+                "last_ip": "127.0.0.1",
                 "ip_count": 1,
             },
             {
@@ -121,7 +125,7 @@ class TestConfiguration(unittest.TestCase):
         self.assertRaises(
             sensor_net.errors.MissingDriverError,
             sensor_net.config.get_configuration,
-            os.path.join(self.config_path, "miss_driver"),
+            os.path.join(self.config_path, "miss_driver.yaml"),
         )
 
     def test_invalid_driver_configuration(self):

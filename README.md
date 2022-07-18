@@ -23,8 +23,8 @@ networks:
       - 10.0.1.10 - 10.0.1.20
     sensor_prefix: sn0
     api_port: 80
-    api_location: /
-    cron: * * * * * *
+    api_location: "/"
+    cron: "* * * * * *"
 ```
 
 ### daemon_name
@@ -48,6 +48,8 @@ def get_driver(name: str, configuration: dict) -> BackendDriver:
     raise NotImplementedError("get_backend is not implemented.")
 
 ```
+
+*Note: get_driver **MUST** have parameters types annotations.*
 
 ### networks:
 Defines the networks to pull.
