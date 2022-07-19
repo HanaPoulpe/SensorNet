@@ -2,7 +2,7 @@
 import datetime
 import unittest
 
-import sensor_net.cron as cron
+import src.sensor_net.cron as cron
 
 
 class TestCron(unittest.TestCase):

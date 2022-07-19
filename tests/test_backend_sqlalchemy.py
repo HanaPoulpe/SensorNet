@@ -4,10 +4,9 @@ import decimal
 import logging
 import unittest
 
-import sensor_net
-import sensor_net.backend_driver.sqlalchemy
-import sensor_net.backend_driver.sqlalchemy.schema
-import sensor_net.errors
+import src.sensor_net
+import src.sensor_net.backend_driver.sqlalchemy
+import src.sensor_net.backend_driver.sqlalchemy.schema
 
 
 class TestSQLAlchemyBackendWorking(unittest.TestCase):
@@ -23,12 +22,12 @@ class TestSQLAlchemyBackendWorking(unittest.TestCase):
         """
         logging.basicConfig(level=logging.DEBUG)
 
-        self.driver = sensor_net.backend_driver.sqlalchemy.get_driver(
+        self.driver = src.sensor_net.backend_driver.sqlalchemy.get_driver(
             "test_daemon",
             {"url": "sqlite:///:memory:"},
         )
 
-        self.schema = sensor_net.backend_driver.sqlalchemy.schema.Schema()
+        self.schema = src.sensor_net.backend_driver.sqlalchemy.schema.Schema()
         self.schema.setup(self.driver.engine)
 
     def test_write_success(self):
@@ -37,7 +36,7 @@ class TestSQLAlchemyBackendWorking(unittest.TestCase):
             network_name="test_net",
             network_prefix="tst",
             sensor_address="0.0.0.0",
-            data=[sensor_net.SensorData(
+            data=[src.sensor_net.SensorData(
                 "heartbeat",
                 123,
                 datetime.datetime(2022, 1, 2, 3, 4, 5)  # 2022-01-02, 03:04:05
@@ -66,7 +65,7 @@ class TestSQLAlchemyBackendIssues(unittest.TestCase):
 
     def setUp(self) -> None:
         """Backend driver."""
-        self.driver = sensor_net.backend_driver.sqlalchemy.get_driver(
+        self.driver = src.sensor_net.backend_driver.sqlalchemy.get_driver(
             "failed_tests",
             {"url": "sqlite:///:memory:"},
         )
@@ -74,12 +73,12 @@ class TestSQLAlchemyBackendIssues(unittest.TestCase):
     def test_write_failed(self):
         """Test write error accessing to SQLAlchemy. Should raise a BackendWriteError."""
         self.assertRaises(
-            sensor_net.errors.BackendWriteError,
+            src.sensor_net.backend_driver.sqlalchemy.BackendWriteError,
             self.driver.write,
             network_name="test_net",
             network_prefix="tst",
             sensor_address="0.0.0.0",
-            data=[sensor_net.SensorData(
+            data=[src.sensor_net.SensorData(
                 "heartbeat",
                 123.456,
                 datetime.datetime(2022, 1, 2, 3, 4, 5)  # 2022-01-02, 03:04:05

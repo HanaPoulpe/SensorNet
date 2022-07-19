@@ -2,11 +2,12 @@
 import datetime
 from typing import Iterable
 
-import sensor_net.errors
 import sqlalchemy.exc
-from sensor_net import SensorData
 from sqlalchemy import MetaData, Table
 from sqlalchemy.engine import Engine
+
+from sensor_net import SensorData
+from sensor_net.errors import BackendWriteError
 
 from ._logger import logger
 
@@ -79,7 +80,7 @@ class SQLAlchemyDriver:
                 str(err),
             )
             logger.error(message)
-            raise sensor_net.errors.BackendWriteError(
+            raise BackendWriteError(
                 backend_name=self.name,
                 message=message,
             )
