@@ -8,6 +8,7 @@ import yaml
 
 from ._ip_iterator import IPRangeIterator, SubnetIterator
 from ._plugin_loader import load_backend_driver
+from .cron import is_cron_expression
 from .drivers import BackendDriver
 from .errors import ConfigError
 
@@ -69,7 +70,14 @@ class NetworkConfig:
     api_location: str = dataclasses.field(default="/")
 
     def __post_init__(self):
-        """Completes dataclasses initialization."""
+        """
+        Completes dataclasses initialization.
+
+        Checks if cron is a valid cron string.
+        """
+        if not is_cron_expression(self.cron):
+            raise ConfigError("Invalid cron expression: %s" % self.cron)
+
         self.api_endpoints = _EndpointWalker(self.ip_addresses)
 
 

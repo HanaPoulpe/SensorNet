@@ -114,11 +114,14 @@ class TestConfiguration(unittest.TestCase):
     def test_invalid_configuration(self):
         """Test multiple configuration issues, configuration issues should be logged and a
         ConfigurationError should be raised."""
-        self.assertRaises(
-            sensor_net.errors.ConfigError,
-            sensor_net.config.get_configuration,
-            os.path.join(self.config_path, "invalid.yaml"),
-        )
+        cfg_list = ("invalid.yaml", "invalid_cron.yaml")
+
+        for cfg in cfg_list:
+            self.assertRaises(
+                sensor_net.errors.ConfigError,
+                sensor_net.config.get_configuration,
+                os.path.join(self.config_path, cfg),
+            )
 
     def test_invalid_driver(self):
         """Test driver is invalid. Should log the issue and raise MissingDriverError."""
