@@ -1,11 +1,12 @@
 """Test all configuration details."""
+import importlib
 import logging
 import os
 import unittest
 
-import sensor_net.backend_driver.stubber
-import sensor_net.config
-import sensor_net.errors
+import src.sensor_net.backend_driver.stubber
+import src.sensor_net.config
+import src.sensor_net.errors
 
 
 class TestConfiguration(unittest.TestCase):
@@ -17,10 +18,11 @@ class TestConfiguration(unittest.TestCase):
         Prepare StubBackendDriver
         Set logger level to DEBUG
         """
+        importlib.reload(src.sensor_net.backend_driver.stubber)
         logging.basicConfig(level=logging.DEBUG)
 
         self.config_path = os.path.join(os.path.dirname(__file__), "configuration")
-        self.backend_driver = sensor_net.backend_driver.stubber.StubBackend()
+        self.backend_driver = src.sensor_net.backend_driver.stubber.StubBackend()
         self.backend_driver.start()
 
     def tearDown(self) -> None:
@@ -28,7 +30,7 @@ class TestConfiguration(unittest.TestCase):
 
     def assertNetwork(
             self,
-            network: sensor_net.config.NetworkConfig,
+            network: src.sensor_net.config.NetworkConfig,
             name: str,
             sensor_prefix: str,
             api_port: int,
@@ -59,7 +61,8 @@ class TestConfiguration(unittest.TestCase):
 
     def test_valid_configuration(self):
         """Check all data types are valid, mandatory field are presents."""
-        config = sensor_net.config.get_configuration(os.path.join(self.config_path, "valid.yaml"))
+        config = src.sensor_net.config.get_configuration(os.path.join(self.config_path,
+                                                                      "valid.yaml"))
 
         self.assertEqual(
             config.daemon_name,
@@ -73,7 +76,7 @@ class TestConfiguration(unittest.TestCase):
         )
         self.assertIsInstance(
             config.driver,
-            sensor_net.backend_driver.stubber.StubBackendDriver,
+            src.sensor_net.backend_driver.stubber.StubBackendDriver,
             "Invalid backend driver type."
         )
         self.assertEqual(len(config.network_setup), 3, "3 networks should be present.")
@@ -118,16 +121,16 @@ class TestConfiguration(unittest.TestCase):
 
         for cfg in cfg_list:
             self.assertRaises(
-                sensor_net.errors.ConfigError,
-                sensor_net.config.get_configuration,
+                src.sensor_net.errors.ConfigError,
+                src.sensor_net.config.get_configuration,
                 os.path.join(self.config_path, cfg),
             )
 
     def test_invalid_driver(self):
         """Test driver is invalid. Should log the issue and raise MissingDriverError."""
         self.assertRaises(
-            sensor_net.errors.MissingDriverError,
-            sensor_net.config.get_configuration,
+            src.sensor_net.errors.MissingDriverError,
+            src.sensor_net.config.get_configuration,
             os.path.join(self.config_path, "miss_driver.yaml"),
         )
 
@@ -141,8 +144,8 @@ class TestConfiguration(unittest.TestCase):
         self.backend_driver.config_error = True
 
         self.assertRaises(
-            sensor_net.errors.BackendConfigError,
-            sensor_net.config.get_configuration,
+            src.sensor_net.backend_driver.stubber.BackendConfigError,
+            src.sensor_net.config.get_configuration,
             os.path.join(self.config_path, "valid.yaml")
         )
 

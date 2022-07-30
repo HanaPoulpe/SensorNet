@@ -85,3 +85,9 @@ class SensorDataTypeError(SensorError):
     """Sensor Data Type Error."""
 
     pass
+
+
+class SensorNoResponseError(SensorError):
+    """Sensor could not be reached for any reason."""
+
+    pass

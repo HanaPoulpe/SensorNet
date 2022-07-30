@@ -31,7 +31,7 @@ networks:
 Name for the daemon that will be sent to the backend.
 
 ### backend
-*driver:* name of the backend module to use. Modules should be installed in ```/lib/sensor_net/modules/module.py```
+*driver:* name of the backend module to use. Modules should be installed in ```/lib/sensor_net/backend_driver/module.py```
 
 This section will contain the module configuration, and will be passed as a dict to the get_driver function.
 

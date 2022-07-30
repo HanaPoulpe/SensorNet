@@ -2,11 +2,12 @@
 import datetime
 from typing import Iterable
 
-import sensor_net.errors
 import sqlalchemy.exc
-from sensor_net import SensorData
 from sqlalchemy import MetaData, Table
 from sqlalchemy.engine import Engine
+
+from sensor_net import SensorData
+from sensor_net.errors import BackendWriteError
 
 from ._logger import logger
 
@@ -46,7 +47,7 @@ class SQLAlchemyDriver:
         return self._table
 
     def write(self, network_name: str, network_prefix: str, sensor_address: str,
-              data: Iterable[SensorData]):
+              data: Iterable[SensorData]) -> int:
         """
         Inserts or updates data into the destination table.
 
@@ -54,6 +55,7 @@ class SQLAlchemyDriver:
         :param network_prefix: prefix of the network
         :param sensor_address: sensor address
         :param data: Collection of sensor data to insert into d_sensor_metrics.
+        :return: Number of rows inserted
         """
         def _cast() -> list[dict]:
             return [{
@@ -69,8 +71,10 @@ class SQLAlchemyDriver:
         try:
             with self._engine.connect() as conn:
                 logger.info("Inserting new rows.")
-                result = conn.execute(self._table.insert().values(_cast()))
+                rows = _cast()
+                result = conn.execute(self._table.insert().values(rows))
                 logger.info(repr(result))
+                return len(rows)
 
                 # conn.commit()
         except sqlalchemy.exc.SQLAlchemyError as err:
@@ -79,7 +83,7 @@ class SQLAlchemyDriver:
                 str(err),
             )
             logger.error(message)
-            raise sensor_net.errors.BackendWriteError(
+            raise BackendWriteError(
                 backend_name=self.name,
                 message=message,
             )
