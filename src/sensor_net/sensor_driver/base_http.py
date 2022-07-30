@@ -30,6 +30,8 @@ class HTTPClient:
 
     def read(self, endpoint: str) -> typing.Iterable[sensor_net.SensorData]:
         """Reads sensor data from the endpoint."""
+        logger = logging.getLogger("base_http")
+
         # Sensor are expected to run on RaspberryPie NanoW on an isolated network.
         # The sensors will not provide any HTTPs interface
         url = f"http://{endpoint}:{self.port}{self.api_location}"
@@ -41,7 +43,7 @@ class HTTPClient:
                 timeout=15,
             )
         except urllib3.exceptions.HTTPError as err:
-            logging.getLogger("base_http").error("Got HTTP error: %s", err)
+            logger.error("Got HTTP error: %s", err)
 
             raise SensorNoResponseError(
                 url,
@@ -54,12 +56,14 @@ class HTTPClient:
                 "HTTP Error: %d: %s" % (response.status, response.reason),
             )
 
+        body = response.read()
+        logger.debug("Response: %s", body)
         try:
-            data = json.loads(response.read())
+            data = json.loads(body)
         except json.JSONDecodeError as err:
             raise SensorDataTypeError(
                 endpoint,
-                err.msg,
+                str(err),
             )
 
         for row in data.get("data", []):
