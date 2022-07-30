@@ -24,7 +24,7 @@ class StubBackendDriver:
             network_name: str,
             network_prefix: str,
             sensor_address: str,
-            data: list[sensor_net.SensorData],
+            data: typing.Iterable[sensor_net.SensorData],
     ):
         """
         Register writes to the stub backend
@@ -34,10 +34,13 @@ class StubBackendDriver:
         :param sensor_address: Sensor address, not used
         :param data: Sensor data, stored in the stub backend writes
         """
+        dts = [d for d in data]
         self.__parent.register_write(
             self.__name,
-            data,
+            dts,
         )
+
+        return len(dts)
 
 
 class StubBackend:

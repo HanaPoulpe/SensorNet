@@ -1,0 +1,11 @@
+daemon_name: test_bin
+backend:
+  driver: stubber
+networks:
+  - name: test_net0
+    ip_addresses:
+      - 127.0.0.1
+    sensor_prefix: tst0
+    api_port: 80
+    api_location: "/"
+    cron: "* * * * * *"

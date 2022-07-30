@@ -7,11 +7,20 @@ from .types import SensorData
 class BackendDriver(typing.Protocol):
     """Basic backend driver."""
 
-    def write(self, datas: typing.Iterable[SensorData]):
+    def write(
+            self,
+            network_name: str,
+            network_prefix: str,
+            sensor_address: str,
+            datas: typing.Iterable[SensorData],
+    ) -> int:
         """
         Writes datas to the backend.
 
-        :param datas: Collection of sensor data to write to the backend.
+        :param network_name: Network name, not used
+        :param network_prefix: Network prefix, not used
+        :param sensor_address: Sensor address, not used
+        :param datas: Sensor data, stored in the stub backend writes
         :raise BackendWriteError: if writes fails.
         """
         ...

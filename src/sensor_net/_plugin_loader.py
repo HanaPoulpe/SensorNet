@@ -3,7 +3,7 @@ import importlib
 import types
 import typing
 
-from ._logger import logger
+from ._logger import get_logger
 from .drivers import BackendDriver
 from .errors import ConfigError, MissingDriverError
 
@@ -19,7 +19,7 @@ def load_plugin(module_name: str, sub_dir: str) -> types.ModuleType:
     sub_dir = sub_dir.replace("/", ".")
     module = f"sensor_net.{sub_dir}.{module_name}"
 
-    logger.debug("Loading module %s", module)
+    get_logger().debug("Loading module %s", module)
     return importlib.import_module(module)
 
 
@@ -40,7 +40,7 @@ def is_backend_driver_module(module: types.ModuleType) -> typing.TypeGuard[Backe
         return False
 
     # We can't predict parameters names, nor return value type.
-    logger.debug("Got get_driver annotations %s", repr(module.get_driver.__annotations__))
+    get_logger().debug("Got get_driver annotations %s", repr(module.get_driver.__annotations__))
     if len(module.get_driver.__annotations__) == 2:
         name, conf = module.get_driver.__annotations__.values()
     elif len(module.get_driver.__annotations__) == 3:
@@ -58,7 +58,7 @@ def load_backend_driver(module_name: str) -> BackendModule:
     :param module_name: Name of the module
     :return: BackendModule
     """
-    logger.info("Loading backend driver: %s", module_name)
+    get_logger().info("Loading backend driver: %s", module_name)
     try:
         module = load_plugin(module_name, "backend_driver")
     except ModuleNotFoundError:

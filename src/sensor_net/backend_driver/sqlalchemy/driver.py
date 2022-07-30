@@ -47,7 +47,7 @@ class SQLAlchemyDriver:
         return self._table
 
     def write(self, network_name: str, network_prefix: str, sensor_address: str,
-              data: Iterable[SensorData]):
+              data: Iterable[SensorData]) -> int:
         """
         Inserts or updates data into the destination table.
 
@@ -55,6 +55,7 @@ class SQLAlchemyDriver:
         :param network_prefix: prefix of the network
         :param sensor_address: sensor address
         :param data: Collection of sensor data to insert into d_sensor_metrics.
+        :return: Number of rows inserted
         """
         def _cast() -> list[dict]:
             return [{
@@ -70,8 +71,10 @@ class SQLAlchemyDriver:
         try:
             with self._engine.connect() as conn:
                 logger.info("Inserting new rows.")
-                result = conn.execute(self._table.insert().values(_cast()))
+                rows = _cast()
+                result = conn.execute(self._table.insert().values(rows))
                 logger.info(repr(result))
+                return len(rows)
 
                 # conn.commit()
         except sqlalchemy.exc.SQLAlchemyError as err:
