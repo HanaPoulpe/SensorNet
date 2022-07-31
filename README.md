@@ -2,6 +2,7 @@
 > Lightweight sensor status pulling daemon.
 
 ![PythonSupport](https://img.shields.io/static/v1?label=Python&message=3.10&color=blue&style=flat&logo=python)
+[![codecov](https://codecov.io/gh/HanaPoulpe/SensorNet/branch/master/graph/badge.svg?token=9B5E336IZW)](https://codecov.io/gh/HanaPoulpe/SensorNet)
 [![Validate](https://github.com/HanaPoulpe/SensorNet/actions/workflows/validate.yml/badge.svg)](https://github.com/HanaPoulpe/SensorNet/actions/workflows/validate.yml)
 
 ## Installation:
