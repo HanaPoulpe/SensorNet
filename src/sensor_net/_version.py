@@ -45,7 +45,7 @@ def get_config():
     cfg.style = "pep440"
     cfg.tag_prefix = ""
     cfg.parentdir_prefix = "sensor_net-"
-    cfg.versionfile_source = "lib/sensor_net/_version.py"
+    cfg.versionfile_source = "src/sensor_net/_version.py"
     cfg.verbose = False
     return cfg
 

@@ -1,2 +1,2 @@
 include versioneer.py
-include lib/sensor_net/_version.py
+include src/sensor_net/_version.py
