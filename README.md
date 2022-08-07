@@ -2,12 +2,19 @@
 > Lightweight sensor status pulling daemon.
 
 ![PythonSupport](https://img.shields.io/static/v1?label=Python&message=3.10&color=blue&style=flat&logo=python)
+[![PyPI](https://img.shields.io/pypi/v/SensorNet)](https://pypi.org/project/SensorNet/)
+![VersionStatus](https://img.shields.io/pypi/status/SensorNet)
 [![codecov](https://codecov.io/gh/HanaPoulpe/SensorNet/branch/master/graph/badge.svg?token=9B5E336IZW)](https://codecov.io/gh/HanaPoulpe/SensorNet)
-[![Validate](https://github.com/HanaPoulpe/SensorNet/actions/workflows/validate.yml/badge.svg)](https://github.com/HanaPoulpe/SensorNet/actions/workflows/validate.yml)
+![Checks](https://img.shields.io/github/checks-status/hanapoulpe/SensorNet/master)
 
 ## Installation:
 
-*TBD*
+```pip install SensorNet```
+
+## Run instructions:
+
+1) Run once: ```sensornet -c <path/to/config.yaml>```
+2) Run daemon: ```sensornet -d - c <path/to/config.yaml>```
 
 ## Configuration:
 
