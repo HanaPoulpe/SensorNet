@@ -3,9 +3,11 @@ on:
   push:
     branches: ["master"]
 jobs:
-  Explore-GitHub-Actions:
+  build:
     runs-on: ubuntu-latest
     environment: python3.10
+    outputs:
+      dist: ${{ steps.dist-out.output.dist }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -16,12 +18,49 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: python -m pip install -U tox versioneer tox-gh-actions pypandoc
+
       - name: Run tox
         run: tox
-      - name: Publish package
+
+      - name: List assets
+        id: dist-out
+        run:
+          echo "::set-output name=dist::$(ls .tox/dist)"
+
+  publish-pypi:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: PyPI publish
         uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages_dir: ".tox/dist"
+
+  publish-gh:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload GitHub release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: .tox/dist/${{ needs.build.outputs.dist }}
+          asset_name: ${{ needs.build.outputs.dist }}
+          asset_content_type: application/gzip
