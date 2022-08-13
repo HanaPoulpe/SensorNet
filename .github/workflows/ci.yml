@@ -5,6 +5,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: python3.10
     outputs:
       dist: ${{ steps.dist_file.outputs.dist }}
     steps:
