@@ -5,7 +5,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: python3.10
     outputs:
       dist: ${{ steps.dist-out.output.dist }}
     steps:
@@ -37,16 +36,17 @@ jobs:
 
   publish-pypi:
     runs-on: ubuntu-latest
+    environment: python3.10
     needs: build
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Retrieve saved Docker image
+      - name: Retrieve saved artifact
         uses: actions/download-artifact@v2
         with:
           name: dist
-          path: ./dist/dist.tgz
+          path: ./dist/
 
       - name: PyPI publish
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -54,7 +54,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: "./dist/dist.tgz"
+          packages_dir: "./dist/"
 
   publish-gh:
     runs-on: ubuntu-latest
@@ -75,8 +75,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: "1.0"
+          release_name: Release 1.0
           draft: false
           prerelease: false
 
