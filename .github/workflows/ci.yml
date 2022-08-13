@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      dist: ${{ steps.dist_file.output.dist }}
+      dist: ${{ steps.dist_file.outputs.dist }}
     steps:
       - uses: actions/checkout@v3
         with:
