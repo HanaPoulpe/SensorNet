@@ -24,9 +24,9 @@ jobs:
 
       - name: List assets
         id: dist-out
-        run:
-          echo "::set-output name=dist::$(ls .tox/dist)"
-          cp .tox/dist/$(ls .tox/dist) ./dist.tgz
+        run: echo "::set-output name=dist::$(ls .tox/dist)"
+      - name: Prepare dist output
+        run: cp .tox/dist/$(ls .tox/dist) ./dist.tgz
 
       - name: Temporarily release package
         uses: actions/upload-artifact@v2
