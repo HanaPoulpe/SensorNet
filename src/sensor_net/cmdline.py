@@ -50,7 +50,7 @@ class SensorNetOptionParser(argparse.ArgumentParser):
         self.add_argument(
             "--version",
             action="version",
-            version=f"%(prog)s {get_versions()}",
+            version=f"%(prog)s {get_versions()['version']}",
             help="Print version information.",
         )
 

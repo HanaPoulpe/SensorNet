@@ -3,7 +3,7 @@ on:
   push:
     branches: ["master"]
 jobs:
-  build:
+  buildRelease:
     runs-on: ubuntu-latest
     environment: python3.10
     outputs:
@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install dependencies
-        run: python -m pip install -U tox versioneer tox-gh-actions pypandoc
+        run: python -m pip install -U -r build_requirements.txt -r release_requirements.txt
 
       - name: Run tox
         run: tox
@@ -29,10 +29,6 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages_dir: ".tox/dist/"
-
-      - name: List assets
-        id: dist_file
-        run: echo "::set-output name=dist::$(ls .tox/dist)"
 
       - name: Create GitHub release
         id: create_release
@@ -55,3 +51,24 @@ jobs:
           asset_path: .tox/dist/${{ steps.dist_file.outputs.dist }}
           asset_name: ${{ steps.dist_file.outputs.dist }}
           asset_content_type: application/gzip
+
+  DockerRelease:
+    runs-on: ubuntu-latest
+    environment: python3.10
+    outputs:
+      dist: ${{ steps.dist_file.outputs.dist }}
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: hanapoulpe/sensor_net:latest
