@@ -2,7 +2,7 @@ FROM python:3.10
 
 # Install SensorNet
 COPY ./ src/
-RUN python -m pip install -U pip
+RUN python -m pip install -U pip || true
 WORKDIR "/src"
 RUN pip install -r build_requirements.txt
 RUN tox
