@@ -1,7 +1,7 @@
 """Setup configuration. Nothing here, refer to setup.cfg file."""
 import setuptools
 
-import versioneer
+from versioneer import get_cmdclass, get_version
 
 try:
     import pypandoc
@@ -11,7 +11,7 @@ except(IOError, ImportError, ModuleNotFoundError):
     long_description = open('README.md').read()
 
 setuptools.setup(
-    version=versioneer.get_versions(),
-    cmdclass=versioneer.get_cmdclass(),
+    version=get_version(),
+    cmdclass=get_cmdclass(),
     long_description=long_description,
 )
