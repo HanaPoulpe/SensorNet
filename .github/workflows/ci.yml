@@ -30,6 +30,10 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages_dir: ".tox/dist/"
 
+      - name: List assets
+        id: dist_file
+        run: echo "::set-output name=dist::$(ls .tox/dist)"
+
       - name: Create GitHub release
         id: create_release
         uses: actions/create-release@v1
