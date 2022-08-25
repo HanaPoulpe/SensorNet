@@ -38,7 +38,6 @@ jobs:
           push: false
           tags: hanapoulpe/sensor_net:latest
           platforms: |
-            linux/arm64
             linux/arm/v6
             linux/arm/v7
             linux/amd64
