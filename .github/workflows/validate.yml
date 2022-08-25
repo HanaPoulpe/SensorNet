@@ -16,7 +16,6 @@ jobs:
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           files: ./coverage.xml
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
@@ -37,7 +36,3 @@ jobs:
         with:
           push: false
           tags: hanapoulpe/sensor_net:latest
-          platforms: |
-            linux/arm/v6
-            linux/arm/v7
-            linux/amd64
