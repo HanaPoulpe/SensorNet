@@ -6,6 +6,8 @@
 ![VersionStatus](https://img.shields.io/pypi/status/SensorNet)
 [![codecov](https://codecov.io/gh/HanaPoulpe/SensorNet/branch/master/graph/badge.svg?token=9B5E336IZW)](https://codecov.io/gh/HanaPoulpe/SensorNet)
 ![Checks](https://img.shields.io/github/checks-status/hanapoulpe/SensorNet/master)
+[![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/hanapoulpe/sensor_net/latest?label=Docker&logo=docker)](https://hub.docker.com/repository/docker/hanapoulpe/sensor_net)
+[![Documentation Status](https://readthedocs.org/projects/sensornet/badge/?version=latest)](https://sensornet.readthedocs.io/en/latest/?badge=latest)
 
 ## Installation:
 
