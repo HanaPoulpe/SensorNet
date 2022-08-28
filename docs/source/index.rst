@@ -3,13 +3,25 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SensorNet's documentation!
-=====================================
+========================
+SensorNet Documentation:
+========================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+.. mdinclude:: ../../README.md
 
+
+API Reference:
+==============
+
+.. autosummary::
+   :toctree: src
+
+   sensor_net
+   sensor_net.types
+   sensor_net.errors
+   sensor_net.backend_driver.sqlalchemy
+   sensor_net.sensor_driver.base_http
+   sensor_net.sensor_driver.base_http.HTTPClient
 
 
 Indices and tables

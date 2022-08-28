@@ -13,9 +13,15 @@ author = 'Hana Burtin'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "m2r2",
+    "sphinx.ext.coverage",
+]
 
 templates_path = ['_templates']
+source_suffix = [".rst", ".md"]
 exclude_patterns = []
 
 
